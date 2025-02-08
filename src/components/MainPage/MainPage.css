@@ -1,0 +1,36 @@
+.main-page-container {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* 상단의 총자산 부분 */
+.total-asset-paper {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* 카테고리별 자산 현황 */
+.category-asset-paper {
+  padding: 1.5rem;
+}
+
+.asset-category-box {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.category-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.category-amount {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.sub-items-list {
+  margin-top: 0.5rem;
+  max-height: 200px; /* 필요시 스크롤 */
+  overflow-y: auto;
+}

@@ -1,0 +1,15 @@
+.initial-asset-page-container {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.initial-asset-paper,
+.selected-category-paper {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.category-list {
+  max-height: 300px;
+  overflow-y: auto;
+}

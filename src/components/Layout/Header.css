@@ -1,0 +1,9 @@
+.header-appbar {
+  background-color: #1976d2; /* MUI 기본색 대신 원하는 색상 */
+}
+
+.header-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
