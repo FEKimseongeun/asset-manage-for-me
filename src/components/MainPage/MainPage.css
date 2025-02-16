@@ -34,3 +34,22 @@
   max-height: 200px; /* 필요시 스크롤 */
   overflow-y: auto;
 }
+
+/* 지출 섹션 전체 박스 */
+.expense-paper {
+  padding: 1.5rem;
+  margin-top: 2rem; /* 카테고리 섹션과 간격 */
+}
+
+/* 각 월의 지출 그룹(예: 1월 지출, 2월 지출) */
+.monthly-expense-box {
+  background-color: #fafafa; /* 옅은 배경색 예시 */
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+/* 월 제목(예: 1월 지출) */
+.month-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}

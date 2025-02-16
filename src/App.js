@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Layout/Header';
 import MainPage from './components/MainPage/MainPage';
 import InitialAssetPage from './components/InitialAssetPage/InitialAssetPage';
+import StockPrice from './StockPrice';
 
 function App() {
   return (

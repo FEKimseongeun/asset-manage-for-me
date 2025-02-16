@@ -10,16 +10,16 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  IconButton,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './InitialAssetPage.css';
 
-// [가짜 함수] 국내/해외 주식 종목명 입력 시 현재 시세를 불러오는 예시
-async function fetchStockPrice(tickerOrName) {
-  // 실제로는 증권사 API or 금융 데이터 API를 호출해야 함
-  // 여기서는 예시로 랜덤 값 반환
+// [가짜 함수] 주식 시세 가져오기 - 예시
+async function fetchStockPrice(ticker) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const randomPrice = Math.floor(Math.random() * 100000) + 1000; // 1,000 ~ 100,000 사이
+      const randomPrice = Math.floor(Math.random() * 100000) + 1000;
       resolve(randomPrice);
     }, 500);
   });
@@ -28,29 +28,28 @@ async function fetchStockPrice(tickerOrName) {
 function InitialAssetPage() {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
-
-  // 선택된 카테고리 id & 하위 항목 입력 상태
   const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // 하위 항목 입력 폼
   const [subItemTitle, setSubItemTitle] = useState('');
   const [subItemAmount, setSubItemAmount] = useState('');
-  const [subItemMarketPrice, setSubItemMarketPrice] = useState(null);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // --- API 불러오기 ---
+  // 카테고리 목록 불러오기
   const fetchCategories = async () => {
     try {
       const res = await fetch('http://localhost:4000/api/categories');
       const data = await res.json();
-      setCategories(data); // [{id, name, subItems:[{id, category_id, title, amount, market_price},... ]}, ...]
+      setCategories(data);
     } catch (err) {
       console.error('카테고리 목록 불러오기 에러:', err);
     }
   };
 
-  // --- (1) 새 카테고리 추가 ---
+  // 새 카테고리 추가
   const handleAddCategory = async () => {
     if (!newCategory.trim()) return;
     try {
@@ -64,7 +63,6 @@ function InitialAssetPage() {
         alert(created.error);
         return;
       }
-      // 성공 시 목록 갱신
       setNewCategory('');
       await fetchCategories();
     } catch (err) {
@@ -72,7 +70,44 @@ function InitialAssetPage() {
     }
   };
 
-  // --- (2) 하위 항목(subItem) 추가 ---
+  // 카테고리 클릭 시 선택
+  const handleSelectCategory = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setSubItemTitle('');
+    setSubItemAmount('');
+  };
+
+  // 카테고리 삭제
+  const handleDeleteCategory = async (categoryId) => {
+    // 정말 삭제해도 괜찮은지 사용자 확인
+    const yes = window.confirm(
+      '해당 카테고리를 삭제하면 하위 항목도 전부 삭제됩니다. 정말 삭제하시겠습니까?'
+    );
+    if (!yes) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/categories/${categoryId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      const result = await res.json();
+      if (result.error) {
+        alert(result.error);
+        return;
+      }
+      // 삭제 성공 시 목록 갱신
+      if (selectedCategory === categoryId) {
+        setSelectedCategory(null);
+      }
+      await fetchCategories();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 하위 항목(subItem) 추가
   const handleAddSubItem = async () => {
     if (!selectedCategory) {
       alert('카테고리를 먼저 선택하세요.');
@@ -83,16 +118,11 @@ function InitialAssetPage() {
       return;
     }
 
-    // 국내주식 or 해외주식 경우 현재 시세를 가져올 수 있음
-    // 우선 카테고리 이름을 찾아보고, 만약 그 이름이 '국내주식'/'해외주식'이면 fetchStockPrice 실행
-    const catObj = categories.find((cat) => cat.id === selectedCategory);
+    // 주식 시세 가져오기 예시
     let currentMarketPrice = null;
-    if (catObj) {
-      const catName = catObj.name;
-      if (catName.includes('주식')) {
-        // 실제로는 ticker나 종목명 등을 subItemTitle로 받아야 함
-        currentMarketPrice = await fetchStockPrice(subItemTitle.trim());
-      }
+    const catObj = categories.find((cat) => cat.id === selectedCategory);
+    if (catObj && catObj.name.includes('주식')) {
+      currentMarketPrice = await fetchStockPrice(subItemTitle.trim());
     }
 
     try {
@@ -113,25 +143,34 @@ function InitialAssetPage() {
         alert(created.error);
         return;
       }
-      // 성공 시 목록 갱신
       setSubItemTitle('');
       setSubItemAmount('');
-      setSubItemMarketPrice(null);
       await fetchCategories();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // 카테고리 클릭 시
-  const handleSelectCategory = (categoryId) => {
-    setSelectedCategory(categoryId);
-    setSubItemTitle('');
-    setSubItemAmount('');
-    setSubItemMarketPrice(null);
+  // 하위 항목 삭제
+  const handleDeleteSubItem = async (assetId) => {
+    const yes = window.confirm('이 자산 항목을 삭제하시겠습니까?');
+    if (!yes) return;
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/assets/${assetId}`, {
+        method: 'DELETE',
+      });
+      const result = await res.json();
+      if (result.error) {
+        alert(result.error);
+        return;
+      }
+      await fetchCategories();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // 현재 선택된 카테고리 객체
   const currentCategoryObj = categories.find(
     (cat) => cat.id === selectedCategory
   );
@@ -166,11 +205,23 @@ function InitialAssetPage() {
                 button
                 selected={cat.id === selectedCategory}
                 onClick={() => handleSelectCategory(cat.id)}
+                secondaryAction={
+                  <IconButton
+                    edge='end'
+                    aria-label='delete'
+                    onClick={(e) => {
+                      e.stopPropagation(); // 카테고리 선택 이벤트가 동작하지 않도록
+                      handleDeleteCategory(cat.id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                }
               >
                 <ListItemText
                   primary={cat.name}
                   secondary={
-                    cat.subItems && cat.subItems.length > 0
+                    cat.subItems && cat.subItems.length
                       ? `${cat.subItems.length}개 항목`
                       : '하위 항목 없음'
                   }
@@ -214,17 +265,28 @@ function InitialAssetPage() {
             </Button>
           </Box>
 
-          {/* 현재 카테고리에 포함된 하위 항목 리스트 */}
+          {/* 현재 카테고리에 포함된 하위 항목 목록 */}
           <Box mt={3}>
             <Typography variant='subtitle1'>하위 항목 목록</Typography>
             {currentCategoryObj && currentCategoryObj.subItems.length > 0 ? (
               <List>
                 {currentCategoryObj.subItems.map((item) => (
-                  <ListItem key={item.id}>
+                  <ListItem
+                    key={item.id}
+                    secondaryAction={
+                      <IconButton
+                        edge='end'
+                        aria-label='delete-subitem'
+                        onClick={() => handleDeleteSubItem(item.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
                     <ListItemText
-                      primary={`${
-                        item.title
-                      } - ${item.amount.toLocaleString()}원`}
+                      primary={`${item.title} - ${(
+                        item.amount || 0
+                      ).toLocaleString()}원`}
                       secondary={
                         item.market_price
                           ? `현재가: ${item.market_price.toLocaleString()}원`
