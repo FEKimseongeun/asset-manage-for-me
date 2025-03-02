@@ -3,20 +3,18 @@
   margin-bottom: 2rem;
 }
 
-/* 상단의 총자산 부분 */
 .total-asset-paper {
   padding: 2rem;
   margin-bottom: 2rem;
 }
 
-/* 카테고리별 자산 현황 */
 .category-asset-paper {
   padding: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .asset-category-box {
   padding: 1rem;
-  margin-bottom: 1rem;
 }
 
 .category-title {
@@ -31,25 +29,10 @@
 
 .sub-items-list {
   margin-top: 0.5rem;
-  max-height: 200px; /* 필요시 스크롤 */
+  max-height: 200px;
   overflow-y: auto;
 }
 
-/* 지출 섹션 전체 박스 */
 .expense-paper {
-  padding: 1.5rem;
-  margin-top: 2rem; /* 카테고리 섹션과 간격 */
-}
-
-/* 각 월의 지출 그룹(예: 1월 지출, 2월 지출) */
-.monthly-expense-box {
-  background-color: #fafafa; /* 옅은 배경색 예시 */
-  border-radius: 4px;
   padding: 1rem;
-}
-
-/* 월 제목(예: 1월 지출) */
-.month-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
 }
